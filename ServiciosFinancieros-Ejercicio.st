@@ -1,3 +1,79 @@
+!classDefinition: #PortfolioTest category: 'ServiciosFinancieros-Ejercicio'!
+TestCase subclass: #PortfolioTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/8/2022 20:21:13'!
+test01
+	
+	| portfolio |
+	
+	portfolio := Portofolio new.
+	
+	self assert: portfolio balance equals: 0.! !
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/8/2022 20:41:06'!
+test02
+	| portfolio |
+	
+	portfolio := Portofolio new.
+	
+	portfolio addAccount: ReceptiveAccount new.
+	
+	self assert: portfolio  balance equals: 0*peso . ! !
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/8/2022 20:42:52'!
+test03
+	| portfolio anAccount |
+	
+	portfolio := Portofolio new.
+	
+	anAccount := ReceptiveAccount new.
+	Deposit register: 100 * peso on: anAccount.
+	Withdraw register: 50  * peso on: anAccount.
+	portfolio addAccount: anAccount .
+	
+	self assert: portfolio  balance equals: 50 * peso. ! !
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/8/2022 21:49:25'!
+test04
+	| portfolio anAccount deposit |
+	
+	portfolio := Portofolio new.
+
+	anAccount := ReceptiveAccount new.
+
+	deposit := Deposit register: 100 * peso on: anAccount.
+	portfolio addAccount: anAccount .
+
+	self assert: ( 	portfolio includesTransaction: deposit ).! !
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/8/2022 21:08:30'!
+test05
+	| portfolio anAccount deposit |
+	
+	portfolio := Portofolio new.
+
+	anAccount := ReceptiveAccount new.
+
+
+	portfolio addAccount: anAccount .
+	deposit := Deposit register: 50 * peso on: anAccount.
+	self assert:( 	portfolio includesTransaction: deposit ).! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PortfolioTest class' category: 'ServiciosFinancieros-Ejercicio'!
+PortfolioTest class
+	instanceVariableNames: ''!
+
+!PortfolioTest class methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/8/2022 20:45:15'!
+APortfolio
+"	^Portofolio new."! !
+
+
 !classDefinition: #ReceptiveAccountTest category: 'ServiciosFinancieros-Ejercicio'!
 TestCase subclass: #ReceptiveAccountTest
 	instanceVariableNames: ''
@@ -217,6 +293,33 @@ Withdraw class
 for: aValue
 
 	^ self new initializeFor: aValue ! !
+
+
+!classDefinition: #Portofolio category: 'ServiciosFinancieros-Ejercicio'!
+Object subclass: #Portofolio
+	instanceVariableNames: 'accounts'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!Portofolio methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/8/2022 20:27:59'!
+addAccount: anAccount
+	accounts add: anAccount .
+	! !
+
+!Portofolio methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/8/2022 20:30:30'!
+balance
+	^accounts sum: [:anAccount | anAccount balance ] ifEmpty: [^0].! !
+
+!Portofolio methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/8/2022 21:45:35'!
+includesTransaction: aTransaction
+
+	^accounts detect: [: anAccount | anAccount hasRegistered: aTransaction ]
+	"[:anAccount | anAccount hasRegistered: aTransaction ]."! !
+
+!Portofolio methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/8/2022 20:32:18'!
+initialize
+	accounts := OrderedCollection new.! !
 
 
 !classDefinition: #ReceptiveAccount category: 'ServiciosFinancieros-Ejercicio'!
