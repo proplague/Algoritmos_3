@@ -167,15 +167,49 @@ test07AccountKnowsItsTransactions
 
 !classDefinition: #TransferenciasTest category: 'ServiciosFinancieros-Ejercicio'!
 TestCase subclass: #TransferenciasTest
-	instanceVariableNames: ''
+	instanceVariableNames: 'accountA accountB manager'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
+!TransferenciasTest methodsFor: 'as yet unclassified' stamp: 'AER 11/9/2022 20:22:23'!
+setUp 
+	
+	accountA := ReceptiveAccount new.
+	accountB := ReceptiveAccount new.
+	Deposit register: 100*peso on: accountA.
+	Deposit register: 150*peso on: accountB.
+	manager := Manager new. ! !
+
+!TransferenciasTest methodsFor: 'as yet unclassified' stamp: 'AER 11/9/2022 20:31:16'!
+test01
+	manager transferFrom: accountA to: accountB  withValue: 50*peso.
+	
+	self assert: accountA balance equals: 50*peso.
+	self assert: accountB balance equals: 200*peso.
+
+	! !
+
+!TransferenciasTest methodsFor: 'as yet unclassified' stamp: 'AER 11/9/2022 20:45:23'!
+test02
+
+	
+	self should: [manager transferFrom: accountA to: accountB  withValue: 300*peso.]
+	raise: Error
+	withExceptionDo: [: anError |self assert: anError messageText equals: Withdraw errorInsufficientBalance ] 
+
+	! !
+
+!TransferenciasTest methodsFor: 'as yet unclassified' stamp: 'AER 11/9/2022 20:48:40'!
+test03
+
+
+	self assert: false! !
+
 
 !classDefinition: #AccountTransaction category: 'ServiciosFinancieros-Ejercicio'!
 Object subclass: #AccountTransaction
-	instanceVariableNames: ''
+	instanceVariableNames: 'transactionId'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
@@ -195,22 +229,6 @@ balance
 updateBalance: aBalance
 
 	self  subclassResponsibility ! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'AccountTransaction class' category: 'ServiciosFinancieros-Ejercicio'!
-AccountTransaction class
-	instanceVariableNames: ''!
-
-!AccountTransaction class methodsFor: 'instance creation' stamp: 'NR 10/17/2019 03:22:00'!
-register: aValue on: account
-
-	| transaction |
-	
-	transaction := self for: aValue.
-	account register: transaction.
-		
-	^ transaction! !
 
 
 !classDefinition: #Deposit category: 'ServiciosFinancieros-Ejercicio'!
@@ -248,10 +266,30 @@ updateBalance: aBalance
 Deposit class
 	instanceVariableNames: ''!
 
-!Deposit class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 18:38'!
+!Deposit class methodsFor: 'instance creation' stamp: 'AER 11/9/2022 19:53:59'!
 for: aValue
 
 	^ self new initializeFor: aValue ! !
+
+!Deposit class methodsFor: 'instance creation' stamp: 'AER 11/9/2022 20:36:16'!
+register: aValue on: account
+
+	| transaction |
+	
+	transaction := self for: aValue.
+	account register: transaction.
+		
+	^ transaction! !
+
+!Deposit class methodsFor: 'instance creation' stamp: 'AER 11/9/2022 21:11:23'!
+register: aValue on: account withTX: aT
+
+	| transaction |
+	
+	transaction := self for: aValue.	
+	account register: transaction.
+		
+	^ transaction! !
 
 
 !classDefinition: #Withdraw category: 'ServiciosFinancieros-Ejercicio'!
@@ -293,6 +331,49 @@ Withdraw class
 for: aValue
 
 	^ self new initializeFor: aValue ! !
+
+!Withdraw class methodsFor: 'instance creation' stamp: 'AER 11/9/2022 20:41:32'!
+register: aValue on: account
+
+	| transaction |
+	
+	transaction := self for: aValue.	(account balance < aValue ) ifTrue:[ self error: Withdraw errorInsufficientBalance ].
+	account register: transaction.
+		
+	^ transaction! !
+
+
+!Withdraw class methodsFor: 'as yet unclassified' stamp: 'AER 11/9/2022 20:40:27'!
+errorInsufficientBalance
+	^'error insufficient balance'! !
+
+
+!classDefinition: #Manager category: 'ServiciosFinancieros-Ejercicio'!
+Object subclass: #Manager
+	instanceVariableNames: 'lastID'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!Manager methodsFor: 'as yet unclassified' stamp: 'AER 11/9/2022 21:01:07'!
+initialize
+	lastID _ 0.! !
+
+!Manager methodsFor: 'as yet unclassified' stamp: 'AER 11/9/2022 21:01:36'!
+nextId
+
+	lastID _ lastID + 1.
+	^lastID! !
+
+!Manager methodsFor: 'as yet unclassified' stamp: 'AER 11/9/2022 21:02:23'!
+transferFrom: oneSender to: oneReciver withValue: aValue
+ 	
+	Withdraw register: aValue on: oneSender. 
+	"onesender := oneSender balance."
+	Deposit register: aValue on: oneReciver . 
+	"onesender := oneReciver balance."
+	
+	^aValue ."an Id"! !
 
 
 !classDefinition: #Portofolio category: 'ServiciosFinancieros-Ejercicio'!
