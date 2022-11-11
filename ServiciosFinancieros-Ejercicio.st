@@ -1,66 +1,45 @@
 !classDefinition: #PortfolioTest category: 'ServiciosFinancieros-Ejercicio'!
 TestCase subclass: #PortfolioTest
-	instanceVariableNames: ''
+	instanceVariableNames: 'portfolio anAccount'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'KG 11/9/2022 22:51:51'!
-test01
-	
-	| portfolio |
-	
-	portfolio := Portfolio new.
+!PortfolioTest methodsFor: 'tests' stamp: 'MMeichtri 11/10/2022 20:53:15'!
+test01PortfolioHaveZeroAsBalanceWhenCreated
 	
 	self assert: portfolio balance equals: 0.! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'KG 11/9/2022 22:51:51'!
-test02
-	| portfolio |
-	
-	portfolio := Portfolio new.
-	
-	portfolio addAccount: ReceptiveAccount new.
-	
-	self assert: portfolio  balance equals: 0*peso . ! !
+!PortfolioTest methodsFor: 'tests' stamp: 'MMeichtri 11/10/2022 22:49:10'!
+test02PortfolioAddAnAccountAndIncreaseHerBalance
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'KG 11/9/2022 22:51:51'!
-test03
-	| portfolio anAccount |
-	
-	portfolio := Portfolio new.
-	
-	anAccount := ReceptiveAccount new.
 	Deposit register: 100 * peso on: anAccount.
 	Withdraw register: 50  * peso on: anAccount.
+	
 	portfolio addAccount: anAccount .
 	
 	self assert: portfolio  balance equals: 50 * peso. ! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'KG 11/9/2022 23:29:40'!
-test04
-	| portfolio anAccount deposit |
+!PortfolioTest methodsFor: 'tests' stamp: 'MMeichtri 11/10/2022 22:48:22'!
+test03PortfolioAddAnAccountAndValidateIfInclude
+
+	| deposit |
 	
-	portfolio := Portfolio new.
-
-	anAccount := ReceptiveAccount new.
-
 	deposit := Deposit register: 100 * peso on: anAccount.
 	portfolio addAccount: anAccount .
-
-	self assert: ( 	portfolio includesTransaction: deposit ).! !
-
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'KG 11/9/2022 23:34:42'!
-test05PortfolioInPortfolio
-	| portfolio portfolio2 anAccount anAccount2 deposit deposit2|
 	
-	portfolio := Portfolio new.
+	self assert: ( portfolio includesTransaction: deposit ).! !
+
+!PortfolioTest methodsFor: 'tests' stamp: 'MMeichtri 11/10/2022 22:43:15'!
+test04PortfolioAddAPortfolioAndValidateInclude
+	|  portfolio2 anAccount2 deposit2|
+	
+
 	portfolio2 := Portfolio new.
 
 	anAccount := ReceptiveAccount new.
 	anAccount2 := ReceptiveAccount new.
 	
-	deposit := Deposit register: 100 * peso on: anAccount.
 	deposit2 := Deposit register: 1000 * peso on: anAccount2.
 	
 	portfolio addAccount: anAccount .
@@ -68,28 +47,15 @@ test05PortfolioInPortfolio
 	
 	portfolio addAccount: portfolio2.
 	
-	self assert: ( 	portfolio includesTransaction: deposit2 ).
-	self assert: ( 	portfolio includesTransaction: deposit ).! !
+	self assert: (portfolio includesPortfolio: portfolio2).! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'KG 11/10/2022 00:02:43'!
-test06PortfolioInPortfolio
-	| portfolio portfolio2 anAccount anAccount2 deposit deposit2|
-	
+
+!PortfolioTest methodsFor: 'setUp' stamp: 'MMeichtri 11/10/2022 22:43:55'!
+setUp
+
 	portfolio := Portfolio new.
-	portfolio2 := Portfolio new.
-
 	anAccount := ReceptiveAccount new.
-	anAccount2 := ReceptiveAccount new.
-	
-	deposit := Deposit register: 100 * peso on: anAccount.
-	deposit2 := Deposit register: 1000 * peso on: anAccount2.
-	
-	portfolio addAccount: anAccount .
-	portfolio2 addAccount: anAccount2 .
-	
-	portfolio addAccount: portfolio2.
-	
-	self assert: (portfolio obtenerTodasLasTransaccionesDe: anAccount2) equals: anAccount2 transactions.! !
+! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -195,30 +161,30 @@ test07AccountKnowsItsTransactions
 
 !classDefinition: #TransferenciasTest category: 'ServiciosFinancieros-Ejercicio'!
 TestCase subclass: #TransferenciasTest
-	instanceVariableNames: 'accountA accountB manager'
+	instanceVariableNames: 'accountA accountB accountManagment'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!TransferenciasTest methodsFor: 'as yet unclassified' stamp: 'AER 11/9/2022 20:22:23'!
+!TransferenciasTest methodsFor: 'tests' stamp: 'MMeichtri 11/10/2022 20:58:49'!
 setUp 
 	
 	accountA := ReceptiveAccount new.
 	accountB := ReceptiveAccount new.
 	Deposit register: 100*peso on: accountA.
 	Deposit register: 150*peso on: accountB.
-	manager := Manager new. ! !
+	accountManagment := AccountManagment new. ! !
 
-!TransferenciasTest methodsFor: 'as yet unclassified' stamp: 'AER 11/9/2022 20:31:16'!
+!TransferenciasTest methodsFor: 'tests' stamp: 'MMeichtri 11/10/2022 20:59:31'!
 test01
-	manager transferFrom: accountA to: accountB  withValue: 50*peso.
+	accountManagment transferFrom: accountA to: accountB  withValue: 50*peso.
 	
 	self assert: accountA balance equals: 50*peso.
 	self assert: accountB balance equals: 200*peso.
 
 	! !
 
-!TransferenciasTest methodsFor: 'as yet unclassified' stamp: 'KG 11/9/2022 21:32:01'!
+!TransferenciasTest methodsFor: 'tests' stamp: 'KG 11/9/2022 21:32:01'!
 test02
 
 	
@@ -228,20 +194,44 @@ test02
 
 	! !
 
-!TransferenciasTest methodsFor: 'as yet unclassified' stamp: 'KG 11/9/2022 21:44:07'!
+!TransferenciasTest methodsFor: 'tests' stamp: 'MMeichtri 11/10/2022 23:35:04'!
 test03
 
-	manager transferFrom: accountA to: accountB  withValue: 50*peso.	
+	accountManagment transferFrom: accountA to: accountB  withValue: 50*peso.	
 	
-	self assert: (accountA valueOfTx: 1) equals: 50*peso.! !
+	self assert: (accountA includesTransactionId: 1) equals: 50*peso.! !
 
-!TransferenciasTest methodsFor: 'as yet unclassified' stamp: 'KG 11/9/2022 23:35:53'!
+!TransferenciasTest methodsFor: 'tests' stamp: 'MMeichtri 11/10/2022 23:27:01'!
 test04
-	"quitar el mensaje contraParteOfTx reemplazandolo por un mensaje que reciba la transacción"
 	
-	manager transferFrom: accountA to: accountB  withValue: 50*peso.	
+	accountManagment transferFrom: accountA to: accountB  withValue: 50*peso.	
 	
-	self assert: (accountA contraParteOfTx: 1) equals: accountB.! !
+	self assert: (accountA againstTransactionId: 1) equals: accountB.! !
+
+
+!classDefinition: #AccountManagment category: 'ServiciosFinancieros-Ejercicio'!
+Object subclass: #AccountManagment
+	instanceVariableNames: 'lastID'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!AccountManagment methodsFor: 'initialization' stamp: 'AER 11/9/2022 21:01:07'!
+initialize
+	lastID _ 0.! !
+
+
+!AccountManagment methodsFor: 'operations' stamp: 'MMeichtri 11/10/2022 21:18:50'!
+nextId
+
+	lastID _ lastID + 1.
+	^lastID! !
+
+!AccountManagment methodsFor: 'operations' stamp: 'MMeichtri 11/10/2022 21:03:14'!
+transferFrom: oneSender to: oneReciver withValue: aValue
+ 	
+	Withdraw register: aValue on: oneSender withTX: self nextId other: oneReciver. 
+	Deposit register: aValue on: oneReciver withTX: self nextId other: oneSender. ! !
 
 
 !classDefinition: #AccountTransaction category: 'ServiciosFinancieros-Ejercicio'!
@@ -257,20 +247,30 @@ value
 	self subclassResponsibility ! !
 
 
-!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/4/2022 19:24:44'!
-balance 
+!AccountTransaction methodsFor: 'operations' stamp: 'MMeichtri 11/10/2022 20:40:51'!
+balance: aReceptiveAccount
 
 	self subclassResponsibility ! !
 
-!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/7/2022 21:08:13'!
+!AccountTransaction methodsFor: 'operations' stamp: 'MMeichtri 11/10/2022 20:41:58'!
 updateBalance: aBalance
 
 	self  subclassResponsibility ! !
 
+
+!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/10/2022 23:08:40'!
+againstTransId
+	self subclassResponsibility ! !
+
+!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/10/2022 23:06:11'!
+includesTransactionId: aTransactionId
+
+	self subclassResponsibility ! !
+
 
 !classDefinition: #Deposit category: 'ServiciosFinancieros-Ejercicio'!
 AccountTransaction subclass: #Deposit
-	instanceVariableNames: 'value txID contraParte'
+	instanceVariableNames: 'value transId againstTransId'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
@@ -280,18 +280,18 @@ initializeFor: aValue
 
 	value := aValue ! !
 
-!Deposit methodsFor: 'initialization' stamp: 'KG 11/9/2022 22:01:09'!
-initializeFor: aValue withTX: aTx
+!Deposit methodsFor: 'initialization' stamp: 'MMeichtri 11/10/2022 23:10:40'!
+initializeFor: aValue withTX: aTransactionId
 
 	value := aValue. 
-	txID _ aTx.! !
+	transId _ aTransactionId .! !
 
-!Deposit methodsFor: 'initialization' stamp: 'KG 11/9/2022 22:44:31'!
-initializeFor: aValue withTX: aTx conContraParte: cParte
+!Deposit methodsFor: 'initialization' stamp: 'MMeichtri 11/10/2022 23:11:23'!
+initializeFor: aValue withTX: aTransactionId conContraParte: anAgainstTransId
 
 	value := aValue. 
-	txID _ aTx.
-	contraParte _ cParte.! !
+	transId _ aTransactionId .
+	againstTransId _ anAgainstTransId.! !
 
 
 !Deposit methodsFor: 'value' stamp: 'MMeichtri 11/4/2022 19:31:19'!
@@ -305,18 +305,20 @@ value
 	^ value! !
 
 
-!Deposit methodsFor: 'as yet unclassified' stamp: 'KG 11/9/2022 22:40:34'!
-contraParte
-	^contraParte.! !
+!Deposit methodsFor: 'operations' stamp: 'MMeichtri 11/10/2022 23:09:43'!
+againstTransId
 
-!Deposit methodsFor: 'as yet unclassified' stamp: 'KG 11/9/2022 22:18:45'!
-tieneTxID: aTx
-	^txID = aTx.! !
+	^ againstTransId .! !
 
-!Deposit methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/7/2022 21:08:35'!
+!Deposit methodsFor: 'operations' stamp: 'MMeichtri 11/10/2022 20:42:11'!
 updateBalance: aBalance
 
 	^ aBalance  + self value! !
+
+
+!Deposit methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 23:10:18'!
+includesTransactionId: aTransactionId
+	^transId = aTransactionId.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -372,53 +374,54 @@ register: aValue on: account withTX: aTxId other: contraParte
 
 !classDefinition: #Withdraw category: 'ServiciosFinancieros-Ejercicio'!
 AccountTransaction subclass: #Withdraw
-	instanceVariableNames: 'value txID contraParte'
+	instanceVariableNames: 'value transId againstTransId'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!Withdraw methodsFor: 'initialization' stamp: 'KG 11/9/2022 21:49:39'!
+!Withdraw methodsFor: 'initialization' stamp: 'MMeichtri 11/10/2022 23:12:35'!
 initializeFor: aValue
 
 	value := aValue ! !
 
-!Withdraw methodsFor: 'initialization' stamp: 'KG 11/9/2022 22:00:29'!
-initializeFor: aValue withTX: aTx
+!Withdraw methodsFor: 'initialization' stamp: 'MMeichtri 11/10/2022 23:13:28'!
+initializeFor: aValue withTX: aTransactionId
 
 	value := aValue. 
-	txID _ aTx.! !
+	transId _ aTransactionId.! !
 
-!Withdraw methodsFor: 'initialization' stamp: 'KG 11/9/2022 22:44:06'!
-initializeFor: aValue withTX: aTx conContraParte: cParte 
+!Withdraw methodsFor: 'initialization' stamp: 'MMeichtri 11/10/2022 23:14:41'!
+initializeFor: aValue withTX: aTransactionId conContraParte: anAgainstTransactionId 
 
 	value := aValue. 
-	txID _ aTx.
-	contraParte _ cParte.! !
+	transId _ aTransactionId.
+	againstTransId _ anAgainstTransactionId.! !
 
 
-!Withdraw methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:33'!
+!Withdraw methodsFor: 'value' stamp: 'MMeichtri 11/10/2022 23:14:30'!
 value
 
 	^ value! !
 
 
-!Withdraw methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/4/2022 19:31:40'!
+!Withdraw methodsFor: 'operations' stamp: 'MMeichtri 11/10/2022 23:11:59'!
+againstTransId
+	^ againstTransId .! !
+
+!Withdraw methodsFor: 'operations' stamp: 'MMeichtri 11/10/2022 20:42:19'!
+updateBalance: aBalance
+
+	^ aBalance - self value! !
+
+
+!Withdraw methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 23:12:05'!
 balance: aReceptiveAccount
 
 	^ value! !
 
-!Withdraw methodsFor: 'as yet unclassified' stamp: 'KG 11/9/2022 22:40:59'!
-contraParte
-	^contraParte.! !
-
-!Withdraw methodsFor: 'as yet unclassified' stamp: 'KG 11/9/2022 22:19:19'!
-tieneTxID: aTx
-	^txID = aTx.! !
-
-!Withdraw methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/7/2022 21:09:00'!
-updateBalance: aBalance
-
-	^ aBalance - self value! !
+!Withdraw methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 23:12:21'!
+includesTransactionId: aTransactionId
+	^transId = aTransactionId.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -475,34 +478,6 @@ errorInsufficientBalance
 	^'error insufficient balance'! !
 
 
-!classDefinition: #Manager category: 'ServiciosFinancieros-Ejercicio'!
-Object subclass: #Manager
-	instanceVariableNames: 'lastID'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Ejercicio'!
-
-!Manager methodsFor: 'as yet unclassified' stamp: 'AER 11/9/2022 21:01:07'!
-initialize
-	lastID _ 0.! !
-
-!Manager methodsFor: 'as yet unclassified' stamp: 'AER 11/9/2022 21:01:36'!
-nextId
-
-	lastID _ lastID + 1.
-	^lastID! !
-
-!Manager methodsFor: 'as yet unclassified' stamp: 'KG 11/9/2022 22:26:42'!
-transferFrom: oneSender to: oneReciver withValue: aValue
- 	
-	Withdraw register: aValue on: oneSender withTX: self nextId other: oneReciver. 
-	"onesender := oneSender balance."
-	Deposit register: aValue on: oneReciver withTX: self nextId other: oneSender. 
-	"onesender := oneReciver balance."
-	
-	^aValue ."an Id"! !
-
-
 !classDefinition: #Portfolio category: 'ServiciosFinancieros-Ejercicio'!
 Object subclass: #Portfolio
 	instanceVariableNames: 'accounts'
@@ -510,51 +485,47 @@ Object subclass: #Portfolio
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/8/2022 20:27:59'!
-addAccount: anAccount
-	accounts add: anAccount .
-	! !
-
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/8/2022 20:30:30'!
+!Portfolio methodsFor: 'testing' stamp: 'MMeichtri 11/8/2022 20:30:30'!
 balance
 	^accounts sum: [:anAccount | anAccount balance ] ifEmpty: [^0].! !
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'KG 11/10/2022 00:11:15'!
-equalTo: anAccount
-	"tenemos un problema de recursión, donde devuelve las transacciones y se comparan en obtenerTodasLasTrasaccionesDe (se espera un bool) y eso explota".
-	"hay que anidar bien la recursión".
-	
-	^(self obtenerTodasLasTransaccionesDe: anAccount).! !
-
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'KG 11/9/2022 23:33:40'!
+!Portfolio methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 22:18:29'!
 hasRegistered: aTransaction
 
-	^self includesTransaction: aTransaction.! !
+	^self includes: aTransaction.! !
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'KG 11/9/2022 23:18:16'!
-includesTransaction: aTransaction	accounts do:
+!Portfolio methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 22:26:02'!
+includes: aTransaction	accounts do:
 		[: anAccount |
-		(anAccount hasRegistered: aTransaction) ifTrue:
+		(anAccount includes: aTransaction) ifTrue:
 			[^true]].
 	^false! !
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/8/2022 20:32:18'!
-initialize
-	accounts := OrderedCollection new.! !
+!Portfolio methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 22:37:59'!
+includesPortfolio: aPortfolio
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'KG 11/10/2022 00:07:22'!
-obtenerTodasLasTransaccionesDe: unaCuenta
+	^ accounts includes: aPortfolio! !
+
+!Portfolio methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 22:55:23'!
+includesTransaction: aTransaction
+
 	accounts do:
 		[: anAccount |
-		(anAccount equalTo: unaCuenta) ifTrue:
-			[^anAccount transactions.]].
-	^nil.
-	! !
+		(anAccount includes: aTransaction) ifTrue:
+			[^true]].
+	^false! !
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'KG 11/9/2022 23:50:21'!
-transactions
 
-	"no tiene transacciones Portfolio - assert"! !
+!Portfolio methodsFor: 'initialization' stamp: 'MMeichtri 11/10/2022 20:42:52'!
+initialize
+
+	accounts := OrderedCollection new.! !
+
+
+!Portfolio methodsFor: 'operations' stamp: 'MMeichtri 11/10/2022 20:42:40'!
+addAccount: anAccount
+
+	accounts add: anAccount .	! !
 
 
 !classDefinition: #ReceptiveAccount category: 'ServiciosFinancieros-Ejercicio'!
@@ -564,56 +535,59 @@ Object subclass: #ReceptiveAccount
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!ReceptiveAccount methodsFor: 'initialization' stamp: 'NR 10/17/2019 15:06:56'!
+!ReceptiveAccount methodsFor: 'initialization' stamp: 'MMeichtri 11/10/2022 22:57:14'!
 initialize
 
 	transactions := OrderedCollection new.! !
 
 
-!ReceptiveAccount methodsFor: 'main protocol' stamp: 'MMeichtri 11/8/2022 19:48:13'!
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'MMeichtri 11/10/2022 22:56:04'!
 balance
 
 	| parcialBalance |
-	
 	parcialBalance := 0.
+	
 	^ transactions sum: [ : aTransaction | aTransaction updateBalance: parcialBalance ] ifEmpty: [ 0 ].! !
 
-!ReceptiveAccount methodsFor: 'main protocol' stamp: 'KG 11/9/2022 22:56:12'!
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'MMeichtri 11/10/2022 21:35:11'!
 hasRegistered: aTransaction
+
 	^ transactions includes: aTransaction 
 ! !
 
-!ReceptiveAccount methodsFor: 'main protocol' stamp: 'MMeichtri 11/7/2022 20:47:57'!
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'MMeichtri 11/10/2022 22:57:26'!
 register: aTransaction
-		
-	transactions add: aTransaction 
-! !
 
-!ReceptiveAccount methodsFor: 'main protocol' stamp: 'KG 11/9/2022 23:47:47'!
+	transactions add: aTransaction ! !
+
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'MMeichtri 11/10/2022 22:57:40'!
 transactions 
+
 	^ transactions copy! !
 
 
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/4/2022 19:30:02'!
-balanceDeposit
-
-	^ Deposit  value! !
-
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/4/2022 19:30:12'!
-balanceWithdraw
-
-	^ Withdraw  value! !
-
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'KG 11/9/2022 22:42:17'!
-contraParteOfTx: txID
+!ReceptiveAccount methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 23:33:14'!
+againstTransactionId: aTransactionId
 	
-	^(transactions detect: [ :elem | elem tieneTxID: txID]) contraParte.! !
+	^(self findAccountTransactionWithId: aTransactionId) againstTransId.! !
 
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'KG 11/10/2022 00:05:52'!
-equalTo: anAccount
-	^(self = anAccount)! !
-
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'KG 11/9/2022 22:41:35'!
-valueOfTx: txID
+!ReceptiveAccount methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 23:35:03'!
+includesTransactionId: aTransactionId
 	
-	^(transactions detect: [ :elem | elem tieneTxID: txID]) value.! !
+	^(self findAccountTransactionWithId: aTransactionId) value.! !
+
+
+!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/10/2022 23:32:01'!
+findAccountTransactionWithId: txID
+	
+	^(transactions detect: [ :elem | elem includesTransactionId: txID]) .! !
+
+!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/10/2022 22:28:28'!
+includes: aTransaction
+
+	^ transactions includes: aTransaction ! !
+
+!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/10/2022 22:34:22'!
+includesTransaction: aTransaction
+
+	^ transactions includes: aTransaction ! !
