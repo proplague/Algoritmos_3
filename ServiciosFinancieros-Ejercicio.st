@@ -75,51 +75,42 @@ TestCase subclass: #ReceptiveAccountTest
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'LL 7/1/2021 03:10:43'!
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'MMeichtri 11/11/2022 16:01:24'!
 test01ReceptiveAccountHaveZeroAsBalanceWhenCreated 
-
 	| account |
-	
 	account := ReceptiveAccount new.
+	
+	self assert: 0 equals: account balance! !
 
-	self assert: 0 equals: account balance
-! !
-
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'LL 7/1/2021 03:14:20'!
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'MMeichtri 11/11/2022 16:01:37'!
 test02DepositIncreasesBalanceOnTransactionValue 
 
 	| account |
-	
 	account := ReceptiveAccount  new.
 	Deposit register: 100 * peso on: account.
-		
-	self assert: 100 * peso equals: account balance
-! !
+	
+	self assert: 100 * peso equals: account balance! !
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'LL 7/1/2021 03:14:24'!
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'MMeichtri 11/11/2022 16:01:48'!
 test03WithdrawDecreasesBalanceOnTransactionValue 
 
 	| account |
-	
 	account := ReceptiveAccount new.
 	Deposit register: 100 * peso on: account.
 	Withdraw register: 50 * peso on: account.
-		
-	self assert: 50 * peso equals: account balance
-! !
+	
+	self assert: 50 * peso equals: account balance! !
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'LL 7/1/2021 03:10:14'!
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'MMeichtri 11/11/2022 16:02:00'!
 test04WithdrawValueMustBePositive 
 
 	| account withdrawValue |
-	
 	account := ReceptiveAccount new.
 	withdrawValue := 50 * peso.
 	
-	self assert: withdrawValue equals: (Withdraw register: withdrawValue on: account) value
-! !
+	self assert: withdrawValue equals: (Withdraw register: withdrawValue on: account) value! !
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'LL 7/1/2021 03:10:22'!
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'MMeichtri 11/11/2022 16:02:14'!
 test05ReceptiveAccountKnowsRegisteredTransactions 
 
 	| account deposit withdraw |
@@ -127,12 +118,11 @@ test05ReceptiveAccountKnowsRegisteredTransactions
 	account := ReceptiveAccount new.
 	deposit := Deposit register: 100 * peso on: account.
 	withdraw := Withdraw register: 50 * peso on: account.
-		
+	
 	self assert: (account hasRegistered: deposit).
-	self assert: (account hasRegistered: withdraw).
-! !
+	self assert: (account hasRegistered: withdraw).! !
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'LL 7/1/2021 03:12:14'!
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'MMeichtri 11/11/2022 16:02:35'!
 test06ReceptiveAccountDoNotKnowNotRegisteredTransactions
 
 	| account deposit withdraw |
@@ -140,43 +130,31 @@ test06ReceptiveAccountDoNotKnowNotRegisteredTransactions
 	account := ReceptiveAccount new.
 	deposit :=  Deposit for: 100 * peso.
 	withdraw := Withdraw for: 50 * peso.
-		
+	
 	self deny: (account hasRegistered: deposit).
-	self deny: (account hasRegistered: withdraw).
-! !
+	self deny: (account hasRegistered: withdraw).! !
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'LL 7/1/2021 03:12:23'!
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'MMeichtri 11/11/2022 16:02:52'!
 test07AccountKnowsItsTransactions 
 
 	| account deposit |
 	
 	account := ReceptiveAccount new.
-	
 	deposit := Deposit register: 50 * peso on: account.
-		
+	
 	self assert: 1 equals: account transactions size.
-	self assert: (account transactions includes: deposit).
-! !
+	self assert: (account transactions includes: deposit).! !
 
 
-!classDefinition: #TransferenciasTest category: 'ServiciosFinancieros-Ejercicio'!
-TestCase subclass: #TransferenciasTest
+!classDefinition: #TransfersTest category: 'ServiciosFinancieros-Ejercicio'!
+TestCase subclass: #TransfersTest
 	instanceVariableNames: 'accountA accountB accountManagment'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!TransferenciasTest methodsFor: 'tests' stamp: 'MMeichtri 11/10/2022 20:58:49'!
-setUp 
-	
-	accountA := ReceptiveAccount new.
-	accountB := ReceptiveAccount new.
-	Deposit register: 100*peso on: accountA.
-	Deposit register: 150*peso on: accountB.
-	accountManagment := AccountManagment new. ! !
-
-!TransferenciasTest methodsFor: 'tests' stamp: 'MMeichtri 11/10/2022 20:59:31'!
-test01
+!TransfersTest methodsFor: 'tests' stamp: 'MMeichtri 11/11/2022 16:12:36'!
+test01AccountATransferAccountBAndBalanceIsCorrect
 	accountManagment transferFrom: accountA to: accountB  withValue: 50*peso.
 	
 	self assert: accountA balance equals: 50*peso.
@@ -184,29 +162,29 @@ test01
 
 	! !
 
-!TransferenciasTest methodsFor: 'tests' stamp: 'KG 11/9/2022 21:32:01'!
-test02
-
-	
-	"self should: [manager transferFrom: accountA to: accountB  withValue: 300*peso.]
-	raise: Error
-	withExceptionDo: [: anError |self assert: anError messageText equals: Withdraw errorInsufficientBalance ] "
-
-	! !
-
-!TransferenciasTest methodsFor: 'tests' stamp: 'MMeichtri 11/10/2022 23:35:04'!
-test03
+!TransfersTest methodsFor: 'tests' stamp: 'MMeichtri 11/11/2022 16:14:03'!
+test02AccountATransferAccountBAndValueOfTransIdSavedIsCorrect
 
 	accountManagment transferFrom: accountA to: accountB  withValue: 50*peso.	
 	
 	self assert: (accountA includesTransactionId: 1) equals: 50*peso.! !
 
-!TransferenciasTest methodsFor: 'tests' stamp: 'MMeichtri 11/10/2022 23:27:01'!
-test04
+!TransfersTest methodsFor: 'tests' stamp: 'MMeichtri 11/11/2022 16:14:52'!
+test03AccountATransferAccountBAndAgainstaOfAccountAIsAccountB
 	
 	accountManagment transferFrom: accountA to: accountB  withValue: 50*peso.	
 	
 	self assert: (accountA againstTransactionId: 1) equals: accountB.! !
+
+
+!TransfersTest methodsFor: 'setUp' stamp: 'MMeichtri 11/10/2022 20:58:49'!
+setUp 
+	
+	accountA := ReceptiveAccount new.
+	accountB := ReceptiveAccount new.
+	Deposit register: 100*peso on: accountA.
+	Deposit register: 150*peso on: accountB.
+	accountManagment := AccountManagment new. ! !
 
 
 !classDefinition: #AccountManagment category: 'ServiciosFinancieros-Ejercicio'!
@@ -267,6 +245,39 @@ includesTransactionId: aTransactionId
 
 	self subclassResponsibility ! !
 
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'AccountTransaction class' category: 'ServiciosFinancieros-Ejercicio'!
+AccountTransaction class
+	instanceVariableNames: ''!
+
+!AccountTransaction class methodsFor: 'instanceCreation' stamp: 'MMeichtri 11/11/2022 15:48:45'!
+for: aValue
+
+	^ self new initializeFor: aValue ! !
+
+!AccountTransaction class methodsFor: 'instanceCreation' stamp: 'MMeichtri 11/11/2022 15:47:53'!
+for: aValue tx: aTx  conContraParte: contraParte
+	^ self new initializeFor: aValue withTX: aTx conContraParte: contraParte.! !
+
+!AccountTransaction class methodsFor: 'instanceCreation' stamp: 'MMeichtri 11/11/2022 15:49:45'!
+register: aValue on: account
+
+	| transaction |
+	transaction := self for: aValue.
+	account register: transaction.
+	
+	^ transaction! !
+
+!AccountTransaction class methodsFor: 'instanceCreation' stamp: 'MMeichtri 11/11/2022 15:46:51'!
+register: aValue on: account withTX: aTxId other: contraParte
+
+	| transaction |
+	transaction := self for: aValue tx: aTxId conContraParte: contraParte.
+	account register: transaction.
+	
+	^ transaction! !
+
 
 !classDefinition: #Deposit category: 'ServiciosFinancieros-Ejercicio'!
 AccountTransaction subclass: #Deposit
@@ -275,16 +286,10 @@ AccountTransaction subclass: #Deposit
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!Deposit methodsFor: 'initialization' stamp: 'HernanWilkinson 7/13/2011 18:45'!
+!Deposit methodsFor: 'initialization' stamp: 'MMeichtri 11/11/2022 15:50:41'!
 initializeFor: aValue
 
 	value := aValue ! !
-
-!Deposit methodsFor: 'initialization' stamp: 'MMeichtri 11/10/2022 23:10:40'!
-initializeFor: aValue withTX: aTransactionId
-
-	value := aValue. 
-	transId _ aTransactionId .! !
 
 !Deposit methodsFor: 'initialization' stamp: 'MMeichtri 11/10/2022 23:11:23'!
 initializeFor: aValue withTX: aTransactionId conContraParte: anAgainstTransId
@@ -294,14 +299,8 @@ initializeFor: aValue withTX: aTransactionId conContraParte: anAgainstTransId
 	againstTransId _ anAgainstTransId.! !
 
 
-!Deposit methodsFor: 'value' stamp: 'MMeichtri 11/4/2022 19:31:19'!
-balance: aReceptiveAccount
-
-	^ value! !
-
-!Deposit methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:38'!
+!Deposit methodsFor: 'value' stamp: 'MMeichtri 11/11/2022 15:52:18'!
 value
-
 	^ value! !
 
 
@@ -326,51 +325,6 @@ includesTransactionId: aTransactionId
 Deposit class
 	instanceVariableNames: 'txID'!
 
-!Deposit class methodsFor: 'instance creation' stamp: 'AER 11/9/2022 19:53:59'!
-for: aValue
-
-	^ self new initializeFor: aValue ! !
-
-!Deposit class methodsFor: 'instance creation' stamp: 'KG 11/9/2022 21:53:57'!
-for: aValue tx: aTx
-
-	^ self new initializeFor: aValue withTX: aTx.! !
-
-!Deposit class methodsFor: 'instance creation' stamp: 'KG 11/9/2022 22:37:36'!
-for: aValue tx: aTx  conContraParte: contraParte
-
-	^ self new initializeFor: aValue withTX: aTx conContraParte: contraParte.! !
-
-!Deposit class methodsFor: 'instance creation' stamp: 'AER 11/9/2022 20:36:16'!
-register: aValue on: account
-
-	| transaction |
-	
-	transaction := self for: aValue.
-	account register: transaction.
-		
-	^ transaction! !
-
-!Deposit class methodsFor: 'instance creation' stamp: 'KG 11/9/2022 21:55:50'!
-register: aValue on: account withTX: aTxId
-
-	| transaction |
-	
-	transaction := self for: aValue tx: aTxId.
-	account register: transaction.
-		
-	^ transaction! !
-
-!Deposit class methodsFor: 'instance creation' stamp: 'KG 11/9/2022 22:35:30'!
-register: aValue on: account withTX: aTxId other: contraParte
-
-	| transaction |
-	
-	transaction := self for: aValue tx: aTxId conContraParte: contraParte.
-	account register: transaction.
-		
-	^ transaction! !
-
 
 !classDefinition: #Withdraw category: 'ServiciosFinancieros-Ejercicio'!
 AccountTransaction subclass: #Withdraw
@@ -383,12 +337,6 @@ AccountTransaction subclass: #Withdraw
 initializeFor: aValue
 
 	value := aValue ! !
-
-!Withdraw methodsFor: 'initialization' stamp: 'MMeichtri 11/10/2022 23:13:28'!
-initializeFor: aValue withTX: aTransactionId
-
-	value := aValue. 
-	transId _ aTransactionId.! !
 
 !Withdraw methodsFor: 'initialization' stamp: 'MMeichtri 11/10/2022 23:14:41'!
 initializeFor: aValue withTX: aTransactionId conContraParte: anAgainstTransactionId 
@@ -414,11 +362,6 @@ updateBalance: aBalance
 	^ aBalance - self value! !
 
 
-!Withdraw methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 23:12:05'!
-balance: aReceptiveAccount
-
-	^ value! !
-
 !Withdraw methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 23:12:21'!
 includesTransactionId: aTransactionId
 	^transId = aTransactionId.! !
@@ -429,54 +372,6 @@ includesTransactionId: aTransactionId
 Withdraw class
 	instanceVariableNames: 'txID'!
 
-!Withdraw class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 18:33'!
-for: aValue
-
-	^ self new initializeFor: aValue ! !
-
-!Withdraw class methodsFor: 'instance creation' stamp: 'KG 11/9/2022 21:52:04'!
-for: aValue tx: aTx
-
-	^ self new initializeFor: aValue withTX: aTx.! !
-
-!Withdraw class methodsFor: 'instance creation' stamp: 'KG 11/9/2022 22:37:23'!
-for: aValue tx: aTx conContraParte: contraParte
-
-	^ self new initializeFor: aValue withTX: aTx conContraParte: contraParte.! !
-
-!Withdraw class methodsFor: 'instance creation' stamp: 'KG 11/9/2022 21:30:32'!
-register: aValue on: account
-
-	| transaction |
-	
-	transaction := self for: aValue.	"(account balance < aValue ) ifTrue:[ self error: Withdraw errorInsufficientBalance ]."
-	account register: transaction.
-		
-	^ transaction! !
-
-!Withdraw class methodsFor: 'instance creation' stamp: 'KG 11/9/2022 21:53:12'!
-register: aValue on: account withTX: aTxId
-
-	| transaction |
-	
-	transaction := self for: aValue tx: aTxId.	(account balance < aValue ) ifTrue:[ self error: Withdraw errorInsufficientBalance ].
-	account register: transaction.
-	^ transaction! !
-
-!Withdraw class methodsFor: 'instance creation' stamp: 'KG 11/9/2022 22:38:08'!
-register: aValue on: account withTX: aTxId other: contraParte
-
-	| transaction |
-	
-	transaction := self for: aValue tx: aTxId  conContraParte: contraParte.	(account balance < aValue ) ifTrue:[ self error: Withdraw errorInsufficientBalance ].
-	account register: transaction.
-	^ transaction! !
-
-
-!Withdraw class methodsFor: 'as yet unclassified' stamp: 'AER 11/9/2022 20:40:27'!
-errorInsufficientBalance
-	^'error insufficient balance'! !
-
 
 !classDefinition: #Portfolio category: 'ServiciosFinancieros-Ejercicio'!
 Object subclass: #Portfolio
@@ -485,29 +380,13 @@ Object subclass: #Portfolio
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!Portfolio methodsFor: 'testing' stamp: 'MMeichtri 11/8/2022 20:30:30'!
+!Portfolio methodsFor: 'testing' stamp: 'MMeichtri 11/11/2022 16:05:24'!
 balance
+
 	^accounts sum: [:anAccount | anAccount balance ] ifEmpty: [^0].! !
 
-!Portfolio methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 22:18:29'!
-hasRegistered: aTransaction
-
-	^self includes: aTransaction.! !
-
-!Portfolio methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 22:26:02'!
-includes: aTransaction	accounts do:
-		[: anAccount |
-		(anAccount includes: aTransaction) ifTrue:
-			[^true]].
-	^false! !
-
-!Portfolio methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 22:37:59'!
-includesPortfolio: aPortfolio
-
-	^ accounts includes: aPortfolio! !
-
-!Portfolio methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 22:55:23'!
-includesTransaction: aTransaction
+!Portfolio methodsFor: 'testing' stamp: 'MMeichtri 11/11/2022 16:05:24'!
+findTransaction: aTransaction
 
 	accounts do:
 		[: anAccount |
@@ -515,14 +394,35 @@ includesTransaction: aTransaction
 			[^true]].
 	^false! !
 
+!Portfolio methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 22:18:29'!
+hasRegistered: aTransaction
 
-!Portfolio methodsFor: 'initialization' stamp: 'MMeichtri 11/10/2022 20:42:52'!
+	^self includes: aTransaction.! !
+
+!Portfolio methodsFor: 'testing' stamp: 'MMeichtri 11/11/2022 15:57:33'!
+includes: aTransaction
+
+	^ self findTransaction: aTransaction ! !
+
+!Portfolio methodsFor: 'testing' stamp: 'MMeichtri 11/11/2022 16:05:24'!
+includesPortfolio: aPortfolio
+
+	^ accounts includes: aPortfolio! !
+
+!Portfolio methodsFor: 'testing' stamp: 'MMeichtri 11/11/2022 15:57:41'!
+includesTransaction: aTransaction
+		
+	^ self findTransaction: aTransaction.
+! !
+
+
+!Portfolio methodsFor: 'initialization' stamp: 'MMeichtri 11/11/2022 16:05:24'!
 initialize
 
 	accounts := OrderedCollection new.! !
 
 
-!Portfolio methodsFor: 'operations' stamp: 'MMeichtri 11/10/2022 20:42:40'!
+!Portfolio methodsFor: 'operations' stamp: 'MMeichtri 11/11/2022 16:05:24'!
 addAccount: anAccount
 
 	accounts add: anAccount .	! !
@@ -571,23 +471,23 @@ againstTransactionId: aTransactionId
 	
 	^(self findAccountTransactionWithId: aTransactionId) againstTransId.! !
 
+!ReceptiveAccount methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 22:28:28'!
+includes: aTransaction
+
+	^ transactions includes: aTransaction ! !
+
+!ReceptiveAccount methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 22:34:22'!
+includesTransaction: aTransaction
+
+	^ transactions includes: aTransaction ! !
+
 !ReceptiveAccount methodsFor: 'testing' stamp: 'MMeichtri 11/10/2022 23:35:03'!
 includesTransactionId: aTransactionId
 	
 	^(self findAccountTransactionWithId: aTransactionId) value.! !
 
 
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/10/2022 23:32:01'!
+!ReceptiveAccount methodsFor: 'operations' stamp: 'MMeichtri 11/10/2022 23:32:01'!
 findAccountTransactionWithId: txID
 	
 	^(transactions detect: [ :elem | elem includesTransactionId: txID]) .! !
-
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/10/2022 22:28:28'!
-includes: aTransaction
-
-	^ transactions includes: aTransaction ! !
-
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/10/2022 22:34:22'!
-includesTransaction: aTransaction
-
-	^ transactions includes: aTransaction ! !
