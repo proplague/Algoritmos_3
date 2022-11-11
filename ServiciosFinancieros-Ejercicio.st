@@ -74,16 +74,6 @@ setUp
 	anAccount := ReceptiveAccount new.
 ! !
 
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'PortfolioTest class' category: 'ServiciosFinancieros-Ejercicio'!
-PortfolioTest class
-	instanceVariableNames: ''!
-
-!PortfolioTest class methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/8/2022 20:45:15'!
-APortfolio
-"	^Portofolio new."! !
-
 
 !classDefinition: #ReceptiveAccountTest category: 'ServiciosFinancieros-Ejercicio'!
 TestCase subclass: #ReceptiveAccountTest
@@ -245,7 +235,7 @@ transferFrom: oneSender to: oneReciver withValue: aValue
 AccountManagment class
 	instanceVariableNames: ''!
 
-!AccountManagment class methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/11/2022 16:19:34'!
+!AccountManagment class methodsFor: 'errors' stamp: 'MMeichtri 11/11/2022 16:19:34'!
 errorTransferLessOrEqualTo0
 
 	^ 'Transfer must be greater than 0'! !
