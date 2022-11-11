@@ -153,8 +153,9 @@ TestCase subclass: #TransfersTest
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!TransfersTest methodsFor: 'tests' stamp: 'MMeichtri 11/11/2022 16:12:36'!
+!TransfersTest methodsFor: 'tests' stamp: 'MMeichtri 11/11/2022 16:19:59'!
 test01AccountATransferAccountBAndBalanceIsCorrect
+
 	accountManagment transferFrom: accountA to: accountB  withValue: 50*peso.
 	
 	self assert: accountA balance equals: 50*peso.
@@ -175,6 +176,14 @@ test03AccountATransferAccountBAndAgainstaOfAccountAIsAccountB
 	accountManagment transferFrom: accountA to: accountB  withValue: 50*peso.	
 	
 	self assert: (accountA againstTransactionId: 1) equals: accountB.! !
+
+!TransfersTest methodsFor: 'tests' stamp: 'MMeichtri 11/11/2022 16:23:58'!
+test04AccountAWantsDoATransferToAccountBWith0ValueAndRaisedError
+
+	self 
+	should: [accountManagment transferFrom: accountA to: accountB  withValue: 0*peso]
+	raise: Error
+	withExceptionDo: [ :anError | self assert: anError messageText equals: AccountManagment errorTransferLessOrEqualTo0 ].! !
 
 
 !TransfersTest methodsFor: 'setUp' stamp: 'MMeichtri 11/10/2022 20:58:49'!
@@ -205,11 +214,23 @@ nextId
 	lastID _ lastID + 1.
 	^lastID! !
 
-!AccountManagment methodsFor: 'operations' stamp: 'MMeichtri 11/10/2022 21:03:14'!
+!AccountManagment methodsFor: 'operations' stamp: 'MMeichtri 11/11/2022 16:18:57'!
 transferFrom: oneSender to: oneReciver withValue: aValue
  	
+	(aValue <= 0) ifTrue: [ self error: AccountManagment errorTransferLessOrEqualTo0].
 	Withdraw register: aValue on: oneSender withTX: self nextId other: oneReciver. 
 	Deposit register: aValue on: oneReciver withTX: self nextId other: oneSender. ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'AccountManagment class' category: 'ServiciosFinancieros-Ejercicio'!
+AccountManagment class
+	instanceVariableNames: ''!
+
+!AccountManagment class methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/11/2022 16:19:34'!
+errorTransferLessOrEqualTo0
+
+	^ 'Transfer must be greater than 0'! !
 
 
 !classDefinition: #AccountTransaction category: 'ServiciosFinancieros-Ejercicio'!
