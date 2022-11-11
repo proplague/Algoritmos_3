@@ -10,44 +10,61 @@ test01PortfolioHaveZeroAsBalanceWhenCreated
 	
 	self assert: portfolio balance equals: 0.! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'MMeichtri 11/10/2022 22:49:10'!
+!PortfolioTest methodsFor: 'tests' stamp: 'MMeichtri 11/11/2022 16:33:09'!
 test02PortfolioAddAnAccountAndIncreaseHerBalance
 
 	Deposit register: 100 * peso on: anAccount.
 	Withdraw register: 50  * peso on: anAccount.
 	
-	portfolio addAccount: anAccount .
+	portfolio add: anAccount .
 	
 	self assert: portfolio  balance equals: 50 * peso. ! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'MMeichtri 11/10/2022 22:48:22'!
+!PortfolioTest methodsFor: 'tests' stamp: 'MMeichtri 11/11/2022 16:33:14'!
 test03PortfolioAddAnAccountAndValidateIfInclude
 
 	| deposit |
 	
 	deposit := Deposit register: 100 * peso on: anAccount.
-	portfolio addAccount: anAccount .
+	portfolio add: anAccount .
 	
 	self assert: ( portfolio includesTransaction: deposit ).! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'MMeichtri 11/10/2022 22:43:15'!
+!PortfolioTest methodsFor: 'tests' stamp: 'MMeichtri 11/11/2022 16:33:22'!
 test04PortfolioAddAPortfolioAndValidateInclude
 	|  portfolio2 anAccount2 deposit2|
-	
 
 	portfolio2 := Portfolio new.
-
-	anAccount := ReceptiveAccount new.
 	anAccount2 := ReceptiveAccount new.
-	
 	deposit2 := Deposit register: 1000 * peso on: anAccount2.
-	
-	portfolio addAccount: anAccount .
-	portfolio2 addAccount: anAccount2 .
-	
-	portfolio addAccount: portfolio2.
+	portfolio add: anAccount .
+	portfolio2 add: anAccount2 .
+	portfolio add: portfolio2.
 	
 	self assert: (portfolio includesPortfolio: portfolio2).! !
+
+!PortfolioTest methodsFor: 'tests' stamp: 'MMeichtri 11/11/2022 16:33:43'!
+test05PortfolioIncludesItSelfAndRaisedError
+
+	self 
+	should: [portfolio add: portfolio]
+	raise: Error
+	withExceptionDo: [ :anError | self assert: anError messageText equals: Portfolio errorCanNotIncluseItSelf ].
+! !
+
+!PortfolioTest methodsFor: 'tests' stamp: 'MMeichtri 11/11/2022 16:37:12'!
+test06PortfolioAddAnAccountThatsAlreadyExistsAndRaisedError
+
+	portfolio add: anAccount .
+	
+	self 
+	should: [portfolio add: anAccount ]
+	raise: Error
+	withExceptionDo: [ :anError | self assert: anError messageText equals: Portfolio errorExistsAccountInPortfolio ].
+
+
+	
+! !
 
 
 !PortfolioTest methodsFor: 'setUp' stamp: 'MMeichtri 11/10/2022 22:43:55'!
@@ -194,6 +211,7 @@ setUp
 	Deposit register: 100*peso on: accountA.
 	Deposit register: 150*peso on: accountB.
 	accountManagment := AccountManagment new. ! !
+
 
 
 !classDefinition: #AccountManagment category: 'ServiciosFinancieros-Ejercicio'!
@@ -443,10 +461,28 @@ initialize
 	accounts := OrderedCollection new.! !
 
 
-!Portfolio methodsFor: 'operations' stamp: 'MMeichtri 11/11/2022 16:05:24'!
-addAccount: anAccount
-
+!Portfolio methodsFor: 'operations' stamp: 'MMeichtri 11/11/2022 16:35:27'!
+add: anAccount
+	
+	(anAccount = self) ifTrue: [ self error: Portfolio errorCanNotIncluseItSelf].
+	(accounts includes: anAccount) ifTrue: [ self error: Portfolio errorExistsAccountInPortfolio].
 	accounts add: anAccount .	! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Portfolio class' category: 'ServiciosFinancieros-Ejercicio'!
+Portfolio class
+	instanceVariableNames: ''!
+
+!Portfolio class methodsFor: 'errors' stamp: 'MMeichtri 11/11/2022 16:30:12'!
+errorCanNotIncluseItSelf
+
+	^ 'Can not incluse it self'! !
+
+!Portfolio class methodsFor: 'errors' stamp: 'MMeichtri 11/11/2022 16:35:47'!
+errorExistsAccountInPortfolio
+
+	^'Account already exists in portfolio'! !
 
 
 !classDefinition: #ReceptiveAccount category: 'ServiciosFinancieros-Ejercicio'!
