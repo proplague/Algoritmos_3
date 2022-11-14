@@ -329,7 +329,7 @@ test01ReceptiveAccountIsAbleToPrintReport
 	Deposit register: 100*peso on: carlosAccount.
 	
 	delimiter := String with: Character lf.
-	report := 'Cuenta de Carlos', delimiter, '	Dep髎ito por 100 * pesos', delimiter, '	Balance = 100 * pesos', delimiter."String with: self balance".
+	report := 'Cuenta de Carlos', delimiter, '	Dep贸sito por 100 * pesos', delimiter, '	Balance = 100 * pesos', delimiter."String with: self balance".
 	
 	self assert: carlosAccount accountSummary = report .! !
 
@@ -340,7 +340,7 @@ test02ReceptiveAccountIsAbleToPrintReport
 	Deposit register: 100*peso on: carlosAccount.
 	Withdraw register: 100*peso on: carlosAccount.
 	delimiter := String with: Character lf.
-	report := 'Cuenta de Carlos', delimiter, '	Dep髎ito por 100 * pesos', delimiter, '	Extracci髇 por 100 * pesos', delimiter, '	Balance = 0 * pesos', delimiter.
+	report := 'Cuenta de Carlos', delimiter, '	Dep贸sito por 100 * pesos', delimiter, '	Extracci贸n por 100 * pesos', delimiter, '	Balance = 0 * pesos', delimiter.
 	
 	self assert: carlosAccount accountSummary = report .! !
 
@@ -353,7 +353,7 @@ test03ReceptiveAccountIsAbleToPrintReport
 	
 	Transfer amount: 50*peso from: carlosAccount to: juanAccount.
 	delimiter := String with: Character lf.
-	report := 'Cuenta de Carlos', delimiter, '	Dep髎ito por 100 * pesos', delimiter, '	Salida por transferencia de 50 * pesos', delimiter, '	Balance = 50 * pesos', delimiter.
+	report := 'Cuenta de Carlos', delimiter, '	Dep贸sito por 100 * pesos', delimiter, '	Salida por transferencia de 50 * pesos', delimiter, '	Balance = 50 * pesos', delimiter.
 	
 	self assert: carlosAccount accountSummary = report .! !
 
@@ -367,7 +367,7 @@ test04PortfolioIsAbleToPrintReport
 	Transfer amount: 50*peso from: carlosAccount to: juanAccount.
 	delimiter := String with: Character lf.
 	tabulator := String with: Character tab.
-	report := 'Cuenta de Juan&Carlos S.R.L.',delimiter,tabulator,'	Cuenta de Carlos',delimiter,tabulator,'Dep髎ito por 100 * pesos',delimiter,tabulator,'Salida por transferencia de 50 * pesos',delimiter,tabulator,'Balance = 50 * pesos',delimiter,tabulator,'Cuenta de Juan',delimiter,tabulator, 'Dep髎ito por 100 * pesos',delimiter,tabulator,'Entrada por transferencia de 50 * pesos',delimiter,tabulator,'Balance = 150 * pesos',delimiter,'Balance = 200 * pesos', delimiter.
+	report := 'Cuenta de Juan&Carlos S.R.L.',delimiter,tabulator,'	Cuenta de Carlos',delimiter,tabulator,'Dep贸sito por 100 * pesos',delimiter,tabulator,'Salida por transferencia de 50 * pesos',delimiter,tabulator,'Balance = 50 * pesos',delimiter,tabulator,'Cuenta de Juan',delimiter,tabulator, 'Dep贸sito por 100 * pesos',delimiter,tabulator,'Entrada por transferencia de 50 * pesos',delimiter,tabulator,'Balance = 150 * pesos',delimiter,'Balance = 200 * pesos', delimiter.
 	
 	
 	self assert: true"rootPortfolio accountSummary = report ".
@@ -881,7 +881,7 @@ affectBalance: aBalance
 !Deposit methodsFor: 'Prints' stamp: 'AER 11/13/2022 18:12:11'!
 print
 	
-	^'Dep髎ito por ', (self value) asString! !
+	^'Dep贸sito por ', (self value) asString! !
 
 
 !Deposit methodsFor: 'transferNet' stamp: 'AER 11/13/2022 20:10:52'!
@@ -1048,7 +1048,7 @@ affectBalance: aBalance
 !Withdraw methodsFor: 'Prints' stamp: 'AER 11/13/2022 18:03:19'!
 print
 	
-	^'Extracci髇 por ', (self value) asString! !
+	^'Extracci贸n por ', (self value) asString! !
 
 
 !Withdraw methodsFor: 'transfer' stamp: 'AER 11/13/2022 20:16:14'!
