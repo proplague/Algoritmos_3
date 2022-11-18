@@ -1,40 +1,53 @@
 !classDefinition: #AccountSummaryTest category: 'ServiciosFinancieros'!
 TestCase subclass: #AccountSummaryTest
-	instanceVariableNames: 'anAccount accountSummaryReportForAnAccount reportDetail accountSummaryReportForAPortfolio aPortfolio'
+	instanceVariableNames: 'anAccount accountSummaryReportForAnAccount reportDetail accountSummaryReportForAPortfolio aPortfolio pepeAccount marioAccount anEmptyReceptiveAccount'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros'!
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:36:30'!
+!AccountSummaryTest methodsFor: 'tests' stamp: 'AER 11/18/2022 17:02:20'!
+test01SummaryOfReceptiveAccountWithNoTransactionsIncludesJustZeroBalance
+	reportDetail add: 'Cuenta de sin nombre'.
+	reportDetail add: '	Balance = 0'.
+	self assert: accountSummaryReportForAnAccount printReport equals: reportDetail.
+	! !
+
+!AccountSummaryTest methodsFor: 'tests' stamp: 'AER 11/18/2022 17:03:21'!
+test02SummaryOfPortfolioWithNoTransactionsIncludesJustZeroBalance
+	reportDetail add: 'Portfolio de sin nombre'.
+	reportDetail add: '	Cuenta de sin nombre'.
+	reportDetail add: '		Balance = 0'.
+	reportDetail add: '	Balance = 0'.	
+	self assert: accountSummaryReportForAPortfolio printReport equals: reportDetail.
+	! !
+
+!AccountSummaryTest methodsFor: 'tests' stamp: 'AER 11/18/2022 17:19:36'!
+test03SummaryOfReceptiveAccountWithNames
+	
+	|reportPepeAcc|
+	Deposit register: 1000 * peso on: pepeAccount. 
+	Withdraw register: 123 * peso on: pepeAccount.
+	reportDetail add: 'Cuenta de Pepe'.
+	reportDetail add: '	Depósito por 1000 * pesos'.
+	reportDetail add: '	Extracción por 123 * pesos'.
+	reportDetail add: '	Balance = 877 * pesos'.
+	reportPepeAcc := AccountSummaryReport for: pepeAccount .
+	
+	self assert: reportPepeAcc printReport equals: reportDetail .
+	 ! !
+
+
+!AccountSummaryTest methodsFor: 'setUp' stamp: 'AER 11/18/2022 16:38:03'!
 setUp
 
 	anAccount := ReceptiveAccount new.
 	reportDetail := OrderedCollection new.
 	aPortfolio := Portfolio with: anAccount.
 	accountSummaryReportForAPortfolio := 	AccountSummaryReport for: aPortfolio.
-	accountSummaryReportForAnAccount := AccountSummaryReport for: anAccount.! !
-
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:42:42'!
-test01SummaryOfReceptiveAccountWithNoTransactionsIncludesJustZeroBalance
-	
-	reportDetail add: 'Balance = 0'.
-	self assert: accountSummaryReportForAnAccount printReport equals: reportDetail! !
-
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:44:28'!
-test02SummaryOfPortfolioWithNoTransactionsIncludesJustZeroBalance
-	
-	reportDetail add: 'Balance = 0'.
-	self assert: accountSummaryReportForAPortfolio printReport equals: reportDetail! !
-
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/18/2022 13:12:00'!
-test03
-
-	Deposit register: 100*peso on: anAccount .
-	
-	reportDetail add: 'Deposito por 100 pesos'.
-	reportDetail add: 'Balance = 100 pesos'.
-
-	self assert: accountSummaryReportForAnAccount printReport equals: reportDetail.! !
+	accountSummaryReportForAnAccount := AccountSummaryReport for: anAccount.
+	pepeAccount := ReceptiveAccount named:  'Pepe'.
+	marioAccount := ReceptiveAccount named:  'Mario'.
+	! !
 
 
 !classDefinition: #PortfolioTest category: 'ServiciosFinancieros'!
@@ -565,6 +578,10 @@ accept: aReport
 
 	^ aReport handleAccountAsAPortfolio: self.! !
 
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'AER 11/18/2022 16:35:38'!
+name 
+	^portfolioName ! !
+
 !Portfolio methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 21:53:59'!
 toAllAccountsDo: aBlock
 
@@ -976,6 +993,11 @@ affectTransfer: aValue
 
 	^ aValue ! !
 
+
+!Withdraw methodsFor: 'as yet unclassified' stamp: 'AER 11/18/2022 15:47:03'!
+accept: aReport "aVisitor"
+	^aReport handleTransactionAsWithdraw: self.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Withdraw class' category: 'ServiciosFinancieros'!
@@ -1025,25 +1047,27 @@ for: anAccount
 
 !classDefinition: #AccountSummaryReport category: 'ServiciosFinancieros'!
 Reports subclass: #AccountSummaryReport
-	instanceVariableNames: 'account balance accountSummaryReport'
+	instanceVariableNames: 'account balance accountSummaryReport tabDelimiter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros'!
 
-!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 21:51:59'!
+!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'AER 11/18/2022 16:57:50'!
 handleAccountAsAPortfolio: aPortfolio
+	accountSummaryReport add: 'Portfolio de ', aPortfolio name. 
+	aPortfolio toAllAccountsDo: [:acc | (acc accept: self)]. "Aca hay que agregar una indentacion de alguna forma. "
+	accountSummaryReport add: tabDelimiter ,'Balance = ', aPortfolio balance asString.! !
 
-	aPortfolio toAllAccountsDo: [:acc | (acc accept: self)].! !
-
-!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 21:52:47'!
+!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'AER 11/18/2022 16:58:31'!
 handleAccountAsAReceptiveAccount: aReceptiveAccount
+	accountSummaryReport add: 'Cuenta de ', aReceptiveAccount name.
+	aReceptiveAccount withTransactionsDo: [:transaction | accountSummaryReport add: tabDelimiter,( transaction accept:self)].
+	accountSummaryReport add: tabDelimiter,'Balance = ', aReceptiveAccount balance asString.! !
 
-	aReceptiveAccount withTransactionsDo: [:transaction | accountSummaryReport add: ( transaction accept:self)]! !
-
-!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:53:00'!
+!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'AER 11/18/2022 16:04:37'!
 handleTransactionAsDeposit: aDeposit
 
-	^'Deposito por ', aDeposit value asString.! !
+	^'Depósito por ', aDeposit value asString.! !
 
 !AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:57:04'!
 handleTransactionAsDepositLeg:  aDepositLeg
@@ -1051,25 +1075,34 @@ handleTransactionAsDepositLeg:  aDepositLeg
 
 	^'Entrada por transferencia de ', aDepositLeg value asString.! !
 
+!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'AER 11/18/2022 16:01:59'!
+handleTransactionAsWithdraw: aWithdraw
+
+	^'Extracción por ', aWithdraw value asString.! !
+
 !AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:59:53'!
 handleTransactionAsWithdrawLeg: aWithdrawLeg
 
 	^'Salida por transferencia de ', aWithdrawLeg value asString. ! !
 
-!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 23:01:15'!
+!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'AER 11/18/2022 17:01:25'!
 initializeFor: anAccount 
 
-	account := anAccount.
+	account := anAccount. 
 	
-	accountSummaryReport := OrderedCollection new.! !
+	accountSummaryReport := OrderedCollection new.
+	
+	tabDelimiter := '	'.
+	
+	account accept: self. 
+	
+	 
+	
+! !
 
-!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:06:55'!
+!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'AER 11/18/2022 15:42:13'!
 printReport
-
-	account accept: self.
-	
-	accountSummaryReport add: 'Balance = ', account balance asString. 
-	
+	"Esto deberia transformarse en un método que transforme la ordered collection de Strings en un String con todo el reporte indentado."	
 	^ accountSummaryReport! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
