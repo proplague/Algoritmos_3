@@ -1,19 +1,40 @@
 !classDefinition: #AccountSummaryTest category: 'ServiciosFinancieros'!
 TestCase subclass: #AccountSummaryTest
-	instanceVariableNames: 'carlosAccount'
+	instanceVariableNames: 'anAccount accountSummaryReportForAnAccount reportDetail accountSummaryReportForAPortfolio aPortfolio'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros'!
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/16/2022 17:21:53'!
-test01
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:36:30'!
+setUp
 
-	| accountSummaryReportOfReceptiveAccount |
-	carlosAccount := ReceptiveAccount new.
+	anAccount := ReceptiveAccount new.
+	reportDetail := OrderedCollection new.
+	aPortfolio := Portfolio with: anAccount.
+	accountSummaryReportForAPortfolio := 	AccountSummaryReport for: aPortfolio.
+	accountSummaryReportForAnAccount := AccountSummaryReport for: anAccount.! !
+
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:42:42'!
+test01SummaryOfReceptiveAccountWithNoTransactionsIncludesJustZeroBalance
 	
-	accountSummaryReportOfReceptiveAccount := AccountSummaryReport for: carlosAccount . 
+	reportDetail add: 'Balance = 0'.
+	self assert: accountSummaryReportForAnAccount printReport equals: reportDetail! !
+
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:44:28'!
+test02SummaryOfPortfolioWithNoTransactionsIncludesJustZeroBalance
 	
-	self assert: (accountSummaryReportOfReceptiveAccount printReport: carlosAccount )equals: ''.! !
+	reportDetail add: 'Balance = 0'.
+	self assert: accountSummaryReportForAPortfolio printReport equals: reportDetail! !
+
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/18/2022 13:12:00'!
+test03
+
+	Deposit register: 100*peso on: anAccount .
+	
+	reportDetail add: 'Deposito por 100 pesos'.
+	reportDetail add: 'Balance = 100 pesos'.
+
+	self assert: accountSummaryReportForAnAccount printReport equals: reportDetail.! !
 
 
 !classDefinition: #PortfolioTest category: 'ServiciosFinancieros'!
@@ -322,184 +343,35 @@ test07AccountKnowsItsTransactions
 ! !
 
 
-!classDefinition: #ReportsTest category: 'ServiciosFinancieros'!
-TestCase subclass: #ReportsTest
-	instanceVariableNames: 'carlosAccount juanAccount rootPortfolio'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'ServiciosFinancieros'!
-
-!ReportsTest methodsFor: 'Tests' stamp: 'AER 11/13/2022 19:15:11'!
-setUp
-	
-	
-	carlosAccount := ReceptiveAccount named: 'Carlos'.
-	juanAccount := ReceptiveAccount named: 'Juan'.
-	rootPortfolio := Portfolio named: 'Juan&Carlos S.R.L.'.
-	rootPortfolio 
-		add: carlosAccount;
-		add: juanAccount.! !
-
-!ReportsTest methodsFor: 'Tests' stamp: 'AER 11/13/2022 19:37:02'!
-test01ReceptiveAccountIsAbleToPrintReport
-	| delimiter report|.
-	
-	Deposit register: 100*peso on: carlosAccount.
-	
-	delimiter := String with: Character lf.
-	report := 'Cuenta de Carlos', delimiter, '	Dep贸sito por 100 * pesos', delimiter, '	Balance = 100 * pesos', delimiter."String with: self balance".
-	
-	self assert: carlosAccount accountSummary = report .! !
-
-!ReportsTest methodsFor: 'Tests' stamp: 'AER 11/13/2022 19:37:09'!
-test02ReceptiveAccountIsAbleToPrintReport
-	| delimiter report|.
-	
-	Deposit register: 100*peso on: carlosAccount.
-	Withdraw register: 100*peso on: carlosAccount.
-	delimiter := String with: Character lf.
-	report := 'Cuenta de Carlos', delimiter, '	Dep贸sito por 100 * pesos', delimiter, '	Extracci贸n por 100 * pesos', delimiter, '	Balance = 0 * pesos', delimiter.
-	
-	self assert: carlosAccount accountSummary = report .! !
-
-!ReportsTest methodsFor: 'Tests' stamp: 'AER 11/13/2022 19:37:14'!
-test03ReceptiveAccountIsAbleToPrintReport
-	| delimiter report|.
-	
-	Deposit register: 100*peso on: carlosAccount.
-	Deposit register: 100*peso on: juanAccount.
-	
-	Transfer amount: 50*peso from: carlosAccount to: juanAccount.
-	delimiter := String with: Character lf.
-	report := 'Cuenta de Carlos', delimiter, '	Dep贸sito por 100 * pesos', delimiter, '	Salida por transferencia de 50 * pesos', delimiter, '	Balance = 50 * pesos', delimiter.
-	
-	self assert: carlosAccount accountSummary = report .! !
-
-!ReportsTest methodsFor: 'Tests' stamp: 'AER 11/13/2022 19:52:16'!
-test04PortfolioIsAbleToPrintReport
-	| tabulator delimiter report|.
-	
-	Deposit register: 100*peso on: carlosAccount.
-	Deposit register: 100*peso on: juanAccount.
-	
-	Transfer amount: 50*peso from: carlosAccount to: juanAccount.
-	delimiter := String with: Character lf.
-	tabulator := String with: Character tab.
-	report := 'Cuenta de Juan&Carlos S.R.L.',delimiter,tabulator,'	Cuenta de Carlos',delimiter,tabulator,'Dep贸sito por 100 * pesos',delimiter,tabulator,'Salida por transferencia de 50 * pesos',delimiter,tabulator,'Balance = 50 * pesos',delimiter,tabulator,'Cuenta de Juan',delimiter,tabulator, 'Dep贸sito por 100 * pesos',delimiter,tabulator,'Entrada por transferencia de 50 * pesos',delimiter,tabulator,'Balance = 150 * pesos',delimiter,'Balance = 200 * pesos', delimiter.
-	
-	
-	self assert: true"rootPortfolio accountSummary = report ".
-	
-! !
-
-!ReportsTest methodsFor: 'Tests' stamp: 'AER 11/13/2022 20:20:02'!
-test05TranferNet
-	| tabulator delimiter report|.
-	
-	Deposit register: 100*peso on: carlosAccount.
-	Deposit register: 100*peso on: juanAccount.
-	
-	Transfer amount: 50*peso from: carlosAccount to: juanAccount.
-	delimiter := String with: Character lf.
-	tabulator := String with: Character tab.
-	report := ''.
-	
-	self assert: rootPortfolio transferNet = 0 .
-	
-! !
-
-!ReportsTest methodsFor: 'Tests' stamp: 'AER 11/14/2022 01:42:09'!
-test06TranferNet
-	| accountnegro|.
-	accountnegro  := ReceptiveAccount new.
-	
-	Deposit register: 100*peso on: carlosAccount.
-	Deposit register: 100*peso on: juanAccount.
-	Transfer amount: 50*peso from: carlosAccount to: accountnegro .
-	Transfer amount: 50*peso from: carlosAccount to: juanAccount.
-	
-	rootPortfolio accountSummary.
-	self assert: rootPortfolio transferNet = (-50*peso ).
-	
-! !
-
-
-!classDefinition: #ReportsTest2 category: 'ServiciosFinancieros'!
-TestCase subclass: #ReportsTest2
-	instanceVariableNames: 'carlosAccount juanAccount rootPortfolio'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'ServiciosFinancieros'!
-
-!ReportsTest2 methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/14/2022 21:06:19'!
-setUp
-	
-	
-	carlosAccount := ReceptiveAccount named: 'Carlos'.
-	juanAccount := ReceptiveAccount named: 'Juan'.
-	rootPortfolio := Portfolio named: 'Juan&Carlos S.R.L.'.
-	rootPortfolio 
-		add: carlosAccount;
-		add: juanAccount.! !
-
-!ReportsTest2 methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/14/2022 21:35:35'!
-test01ReceptiveAccountIsAbleToPrintReport
-
-	| delimiter report |.
-	
-	Deposit register: 100*peso on: carlosAccount.
-	
-	delimiter := String with: Character lf.
-
-	report := AccountSummary generateReportOf: carlosAccount .
-
-	self assert: report = ('Cuenta de Carlos', delimiter, '	Dep髎ito por 100 pesos', delimiter, '	Balance = 100 pesos', delimiter).! !
-
-!ReportsTest2 methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/14/2022 21:43:36'!
-test02ReceptiveAccountIsAbleToPrintReport
-	
-	| delimiter report|.
-	
-	Deposit register: 100*peso on: carlosAccount.
-	Withdraw register: 100*peso on: carlosAccount.
-	delimiter := String with: Character lf.
-
-	
-	report := AccountSummary generateReportOf: carlosAccount .
-
-	self assert: report = ('Cuenta de Carlos', delimiter, '	Dep髎ito por 100 pesos', delimiter, '	Extracci髇 por 100 pesos', delimiter, '	Balance = 0 pesos', delimiter).! !
-
-!ReportsTest2 methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/15/2022 10:32:09'!
-test03
-
-	| delimiter report|.
-	
-	Deposit register: 100*peso on: carlosAccount.
-	Deposit register: 100*peso on: juanAccount.
-	
-	Transfer amount: 50*peso from: carlosAccount to: juanAccount.
-	delimiter := String with: Character lf.
-	report := 'Cuenta de Carlos', delimiter, '	Dep髎ito por 100 pesos', delimiter, '	Salida por transferencia de 50 pesos', delimiter, '	Balance = 50 pesos', delimiter.
-	
-	self assert: carlosAccount accountSummary = report .! !
-
-
 !classDefinition: #TransferNetTest category: 'ServiciosFinancieros'!
 TestCase subclass: #TransferNetTest
-	instanceVariableNames: 'carlosAccount aPortfolio'
+	instanceVariableNames: 'aPortfolio anAccount transferNetForPortfolio transferNetForReceptiveAccount destinationAccount originAccount'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros'!
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/16/2022 17:27:58'!
-test01
-	| transferNetReportOfReceptiveAccount |
-	carlosAccount := ReceptiveAccount new.
-	
-	aPortfolio := Portfolio with: carlosAccount.
-	transferNetReportOfReceptiveAccount := TransferNetReport for: aPortfolio .
-	
-	self assert: (transferNetReportOfReceptiveAccount printReport: aPortfolio)  equals: ''.! !
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:56:05'!
+setUp
+
+	originAccount := ReceptiveAccount new.
+	destinationAccount := ReceptiveAccount new.
+	aPortfolio := Portfolio with: originAccount .
+	transferNetForReceptiveAccount := TransferNetReport for: originAccount .
+	transferNetForPortfolio := TransferNetReport for: aPortfolio ! !
+
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:43:31'!
+test01TransferNetOfPortfolioIsZeroWhenThereIsNoTransferTransactions
+	self assert: transferNetForPortfolio printReport equals: '0 pesos'.! !
+
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:43:57'!
+test02TransferNetOfReceptiveAccountIsZeroWhenThereIsNoTransferTransactions
+	self assert: transferNetForReceptiveAccount printReport equals: '0 pesos'.! !
+
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:54:08'!
+test03
+	Transfer amount: 20*peso from: destinationAccount to: originAccount.
+	Transfer amount: 30*peso from: originAccount to: destinationAccount.
+	self assert: transferNetForPortfolio printReport equals: '10 pesos'.! !
 
 
 !classDefinition: #Account category: 'ServiciosFinancieros'!
@@ -542,8 +414,13 @@ addTransactionsTo: aCollectionOfTransactions
 	self subclassResponsibility ! !
 
 
-!Account methodsFor: 'as yet unclassified' stamp: 'AER 11/16/2022 19:59:15'!
-accept: aVisitor
+!Account methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/16/2022 17:15:11'!
+accept: aReport
+
+	self subclassResponsibility ! !
+
+!Account methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/14/2022 20:16:17'!
+traverse: aBlock
 
 	self subclassResponsibility ! !
 
@@ -683,17 +560,27 @@ accountSummary
 	! !
 
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'AER 11/16/2022 21:25:20'!
-accept: aVisitor
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 21:48:22'!
+accept: aReport
 
-	"tendriamos que llamar aReport y generar un mensaje polimorfico que vaya escribiendo el reporte"
-	"aReport puede ser accountSummaryReport o TransferNetReport"
-	^aVisitor visitPortfolio: self. ! !
+	^ aReport handleAccountAsAPortfolio: self.! !
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 21:53:59'!
+toAllAccountsDo: aBlock
+
+	
+	 accounts do: [:account | aBlock value: account].
+	! !
 
 !Portfolio methodsFor: 'as yet unclassified' stamp: 'AER 11/13/2022 20:05:58'!
 transferNet
 	
 	^accounts sum: [ :anAccount | anAccount transferNet ] ifEmpty: [ 0 ]! !
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/14/2022 20:17:03'!
+traverse: aBlock
+
+	^ 0! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -809,11 +696,10 @@ accountSummary
 	! !
 
 
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'AER 11/16/2022 22:11:06'!
-accept: aVisitor 
-	^aVisitor visitReceptiveAccount: self. 
+!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 21:48:43'!
+accept: aReport
 
-	! !
+	^ aReport handleAccountAsAReceptiveAccount: self.! !
 
 !ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'AER 11/13/2022 18:35:13'!
 name
@@ -827,6 +713,11 @@ transferNet
 		inject: 0
 		into: [ :currentBalance :transaction | transaction affectTransfer: currentBalance ]! !
 
+!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 21:53:14'!
+withTransactionsDo: aBlock
+
+	 transactions do: [:aTransaction | aBlock value: aTransaction].! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'ReceptiveAccount class' category: 'ServiciosFinancieros'!
@@ -837,48 +728,6 @@ ReceptiveAccount class
 named: aName
 
 	^self new initializeWithName: aName.! !
-
-
-!classDefinition: #AccountSummary category: 'ServiciosFinancieros'!
-Object subclass: #AccountSummary
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'ServiciosFinancieros'!
-
-!AccountSummary methodsFor: 'as yet unclassified' stamp: 'AER 11/16/2022 20:56:13'!
-visitPortfolio: aPortfolio! !
-
-!AccountSummary methodsFor: 'as yet unclassified' stamp: 'AER 11/16/2022 20:56:34'!
-visitReceptiveAccount: aReceptiveAccount! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'AccountSummary class' category: 'ServiciosFinancieros'!
-AccountSummary class
-	instanceVariableNames: ''!
-
-!AccountSummary class methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/15/2022 10:26:49'!
-generateReportOf: anAccount
-	
-
-	^ anAccount accept: [ : transactions : accountName  | |delimiter resume header footer tabulator |
-	"balance := transactions 
-		inject: 0
-		into: [ :currentBalance :transaction | transaction affectBalance: currentBalance ]."
-	
-	delimiter := String with: Character lf. "newline: Podria ser cr tambien"
-	tabulator := String with: Character tab.
-	header := 'Cuenta de ', accountName.
-	
-	footer := '	Balance = ', (anAccount balance) asString.
-	
-	resume := ''.
-	
-	transactions do: [:transaction | resume _ (resume, tabulator, transaction print, delimiter).].
-	
-	
-	^header, delimiter, resume, footer, delimiter . ]! !
 
 
 !classDefinition: #AccountTransaction category: 'ServiciosFinancieros'!
@@ -945,6 +794,12 @@ asd! !
 affectTransfer: aValue
 
 	^aValue! !
+
+
+!Deposit methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:52:18'!
+accept: aReport
+
+	^aReport handleTransactionAsDeposit: self.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1040,6 +895,12 @@ affectTransfer: aValue
 
 	^aValue  + self value .! !
 
+
+!TransferDepositLeg methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:56:32'!
+accept: aReport
+
+	^ aReport handleTransactionAsDepositLeg: self.! !
+
 
 !classDefinition: #TransferWithdrawLeg category: 'ServiciosFinancieros'!
 TransferLeg subclass: #TransferWithdrawLeg
@@ -1071,6 +932,12 @@ print
 affectTransfer: aValue
 
 	^ aValue - self value .! !
+
+
+!TransferWithdrawLeg methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:58:27'!
+accept: aReport
+	
+	^ aReport handleTransactionAsWithdrawLeg: self.! !
 
 
 !classDefinition: #Withdraw category: 'ServiciosFinancieros'!
@@ -1163,30 +1030,47 @@ Reports subclass: #AccountSummaryReport
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros'!
 
-!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/16/2022 17:40:48'!
+!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 21:51:59'!
+handleAccountAsAPortfolio: aPortfolio
+
+	aPortfolio toAllAccountsDo: [:acc | (acc accept: self)].! !
+
+!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 21:52:47'!
+handleAccountAsAReceptiveAccount: aReceptiveAccount
+
+	aReceptiveAccount withTransactionsDo: [:transaction | accountSummaryReport add: ( transaction accept:self)]! !
+
+!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:53:00'!
+handleTransactionAsDeposit: aDeposit
+
+	^'Deposito por ', aDeposit value asString.! !
+
+!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:57:04'!
+handleTransactionAsDepositLeg:  aDepositLeg
+
+
+	^'Entrada por transferencia de ', aDepositLeg value asString.! !
+
+!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:59:53'!
+handleTransactionAsWithdrawLeg: aWithdrawLeg
+
+	^'Salida por transferencia de ', aWithdrawLeg value asString. ! !
+
+!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 23:01:15'!
 initializeFor: anAccount 
 
 	account := anAccount.
-	balance := 0 * peso.
-	accountSummaryReport := ''.! !
-
-!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/16/2022 17:16:06'!
-printReport: anAccount
-
-	anAccount accept: self.
 	
-	"cuando va a accept que llame a un metodo del report que vaya viendo cad transaccion y generando el reporte"
+	accountSummaryReport := OrderedCollection new.! !
+
+!AccountSummaryReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:06:55'!
+printReport
+
+	account accept: self.
 	
-	^ accountSummaryReport ! !
-
-
-!AccountSummaryReport methodsFor: 'private' stamp: 'AER 11/16/2022 21:54:00'!
-visitPortfolio: aPortfolio
-	"Adsfasdf ."! !
-
-!AccountSummaryReport methodsFor: 'private' stamp: 'AER 11/16/2022 21:56:46'!
-visitReceptiveAccount: aReceptiveAccount
-	^self. ! !
+	accountSummaryReport add: 'Balance = ', account balance asString. 
+	
+	^ accountSummaryReport! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1207,28 +1091,42 @@ Reports subclass: #TransferNetReport
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros'!
 
-!TransferNetReport methodsFor: 'reports' stamp: 'MMeichtri 11/16/2022 17:12:09'!
+!TransferNetReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 21:51:29'!
+handleAccountAsAPortfolio: aPortfolio
+
+	aPortfolio toAllAccountsDo: [: anAccount |  (anAccount accept: self)]! !
+
+!TransferNetReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 21:51:09'!
+handleAccountAsAReceptiveAccount: aReceptiveAccount
+
+	aReceptiveAccount withTransactionsDo: [:transaction |  balance := (transaction accept: self)].! !
+
+!TransferNetReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:57:56'!
+handleTransactionAsDepositLeg: aDepositLeg
+
+
+	^ aDepositLeg affectBalance: transferNetReport. ! !
+
+!TransferNetReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:59:34'!
+handleTransactionAsWithdrawLeg: aWithdrawLeg
+
+
+	^ aWithdrawLeg affectBalance: transferNetReport . 
+	! !
+
+!TransferNetReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:04:37'!
 initializeFor: anAccount
 
 	account := anAccount.
-	balance := 0 * peso.
-	transferNetReport := ''.! !
 
-!TransferNetReport methodsFor: 'reports' stamp: 'MMeichtri 11/16/2022 17:16:17'!
-printReport: anAccount
+	transferNetReport := 0*peso.! !
 
-	anAccount accept: self.
+!TransferNetReport methodsFor: 'as yet unclassified' stamp: 'MMeichtri 11/17/2022 22:05:35'!
+printReport
+
+	account accept: self.
 	
-	^ transferNetReport ! !
-
-
-!TransferNetReport methodsFor: 'private' stamp: 'AER 11/16/2022 22:00:45'!
-visitPortfolio: aPortfolio
-! !
-
-!TransferNetReport methodsFor: 'private' stamp: 'AER 11/16/2022 22:04:19'!
-visitReceptiveAccount: aReceptiveAccount
-	! !
+	^ transferNetReport asString ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1333,11 +1231,3 @@ amount: anAmountOfMoney from: originAccount to: destinationAccount
 	
 	
 	! !
-
-
-!classDefinition: #TransferNet category: 'ServiciosFinancieros'!
-Object subclass: #TransferNet
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'ServiciosFinancieros'!
